@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Abel&display=swap" rel="stylesheet"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Redressed&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Typing speed</title>
+</head>
+<style>
+    body{
+        background-color: blueviolet;
+        color: whitesmoke;
+    }
+    
+    textarea{
+        background-color: #444;
+        color: white;
+        border-radius: 0.5rem;
+    }
+    #contentDiv{
+        padding-top: 7%;
+    }
+    
+    
+</style>
+<body>
+    <div class="container">
+        <div class="row" id="contentDiv">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+
+                <div class="main_body">
+                    <h1 style="text-align: center;font-weight: bold;font-family: 'Anton', sans-serif;">Welcome to typing speed</h1>
+                   <br> <h3 id="textToType" style="font-family: 'Abel', sans-serif;"></h3><br>
+                <h4 id="msg" style="font-family: 'Special Elite', cursive;"></h4>
+                    <textarea type="text" cols="80" rows="8" placeholder="Enter the text" val = ""></textarea>
+                    <br><button id="btn" class="btn btn-warning" style="margin-left: 18rem;width: 10rem;">Start</button>
+                </div>
+
+
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+    </div>
+  <!--
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+
+
+
+            <div class="main_body">
+                <h1 style="text-align: center;">Welcome to typing speed</h1>
+                <h4 id="textToType"></h4>
+                <h4 id="msg"></h4>
+                <textarea type="text" cols="100" rows="10" placeholder="Enter the text" val = ""></textarea>
+                <br><button id="btn">Start</button>
+            </div>
+
+
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+-->    
+
+    <script type="text/javascript">
+    const textType = document.getElementById("textToType");
+    const textareaContent = document.querySelector("textarea");
+    textareaContent.value = "";
+    const finalmsgDiv = document.getElementById("msg");
+    const btn = document.getElementById("btn");
+    let StartTime , endTime;
+    let msg;
+
+    let messages = [
+        "Binary search is an searching algorithm which is used to find the target value in an sorted array",
+        "Merge sort is an sorting algorithm which is used to sort the array which is having time complexity Nlog(N)",
+        "The KMP Algorithm is an efficient exact pattern searching algorithm and is used where fast pattern matching is required but there is a drawback",
+        "BFS is a traversing algorithm where you should start traversing from a selected node and traverse the graph layerwise thus exploring the neighbour nodes",
+        "Depth-first search is an algorithm for traversing or searching tree or graph data structures. The algorithm starts at the root node and explores as far as possible along each branch before backtracking",
+        "Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a graph which may represent",
+        "Prim's algorithm is a greedy algorithm that finds a minimum spanning tree for a weighted undirected graph"
+
+    ];
+
+
+
+    let detectError = (typedWords , givenWords) => {
+        //console.log(typedWords);
+        let typedLength = typedWords.length;
+        let givenLength = givenWords.length;
+        let accurate = 0;
+        let errors = 0;
+        for(let i = 0;i<Math.min(typedLength,givenLength);i++){
+            if(typedWords[i] == givenWords[i]) accurate++;
+            else errors++;
+        }
+
+        // if user types extra words it is also considered as errors
+        if(typedLength > givenLength) errors += typedLength-givenLength;
+
+        return {accurate,errors};
+
+    }
+
+    let playGame = ()=> {
+        let mesNum = Math.floor(Math.random() * messages.length);
+       //mesNum = 5;
+        textType.innerText = messages[mesNum];
+        msg = messages[mesNum];
+        let date = new Date();
+        StartTime = date.getTime();
+        btn.innerText = "Done";
+        finalmsgDiv.innerText = ""
+        textareaContent.value = "";
+        //console.log(StartTime);
+    }
+
+    let endPlay = () => {
+        btn.innerText = "Start";
+        let date = new Date();
+        endTime = date.getTime();
+        //console.log(endTime);
+        let totalTime = (endTime-StartTime)/1000;
+        let msgTyped = textareaContent.value;
+        let words = [] , i , str = "";
+
+        // to obtain all the wordss typed by the users
+
+        for(i of msgTyped){
+            if(i == " "){
+                // if there is multiple spaces in a sentences
+                if(str.length == 0) continue;
+                words.push(str);
+                str = "";
+            }else{
+                str += i;
+            }
+        }
+        if(str.length !=0) words.push(str);
+       // console.log(words);
+
+
+
+        let numWords = words.length;
+        let speed = Math.round(numWords/totalTime * 60);
+        // message to be displayed after the typing is done
+
+        let finalMsg = `Your typing speed is ${speed} WPM.`
+        let givenMsgWords = msg.split(" ");
+        let {accurate,errors } = detectError(words,givenMsgWords);
+        finalMsg += `accurate words are ${accurate} and errors are ${errors}.`;   
+        finalmsgDiv.innerText = finalMsg;
+    }
+
+
+    btn.addEventListener("click",()=> {
+        if(btn.innerText == "Start"){
+            playGame();
+        }else{
+            endPlay();
+        }
+    });
+    
+    </script>
+</body>
+</html>
